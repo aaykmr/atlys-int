@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getCurrentUser, setCurrentUser } from "../utils/auth";
 import { User } from "../types/auth";
 import { Post as PostType } from "../types/post";
 import { getPosts, createPost, initializeDemoPosts } from "../utils/posts";
 import AuthModal from "../components/AuthModal";
-import RichTextEditor from "../components/RichTextEditor";
+import RichTextEditor, {
+  RichTextEditorRef,
+} from "../components/RichTextEditor";
 import Post from "../components/Post";
+import Navbar from "../components/Navbar";
 import {
   FeedContainer,
-  FeedHeader,
-  UserInfo,
-  LogoutButton,
   FeedMain,
   AuthenticatedContent,
   UnauthenticatedContent,
@@ -20,6 +20,9 @@ const Feed: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [posts, setPosts] = useState<PostType[]>([]);
+  const [newPostId, setNewPostId] = useState<string | null>(null);
+  const [pendingNewPost, setPendingNewPost] = useState<PostType | null>(null);
+  const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -48,33 +51,48 @@ const Feed: React.FC = () => {
   const handleCreatePost = (content: string, emoji: string) => {
     if (user) {
       const newPost = createPost({ content, emoji }, user);
+      setPendingNewPost(newPost);
+      setNewPostId(newPost.id);
+
+      // Add the post to the array immediately
       setPosts([newPost, ...posts]);
+
+      // Clear the animation state after animation completes
+      setTimeout(() => {
+        setNewPostId(null);
+        setPendingNewPost(null);
+      }, 2500);
     } else {
       setShowAuthModal(true);
     }
   };
 
+  const handleShare = (post: PostType) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Format the shared content with original poster's name
+    const sharedContent = `<strong>Shared from ${post.user.name}:</strong><br>${post.content}`;
+
+    // Set the content in the rich text editor
+    if (richTextEditorRef.current && richTextEditorRef.current.setContent) {
+      richTextEditorRef.current.setContent(sharedContent);
+    }
+  };
+
   return (
     <FeedContainer>
-      <FeedHeader>
-        <h1>Welcome to Atlys</h1>
-        <UserInfo>
-          {user ? (
-            <>
-              <span>Hello, {user.email || user.username}!</span>
-              <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
-            </>
-          ) : (
-            <LogoutButton onClick={() => setShowAuthModal(true)}>
-              Login / Sign Up
-            </LogoutButton>
-          )}
-        </UserInfo>
-      </FeedHeader>
+      <Navbar
+        user={user}
+        onLogout={handleLogout}
+        onLoginClick={() => setShowAuthModal(true)}
+      />
 
       <FeedMain>
         <AuthenticatedContent>
-          <RichTextEditor onPost={handleCreatePost} />
+          <RichTextEditor ref={richTextEditorRef} onPost={handleCreatePost} />
           {posts.map((post) => (
             <Post
               key={post.id}
@@ -86,15 +104,14 @@ const Feed: React.FC = () => {
               likes={post.likes}
               comments={post.comments}
               shares={post.shares}
+              isNew={post.id === newPostId}
               onLike={() => {
                 if (!user) setShowAuthModal(true);
               }}
               onComment={() => {
                 if (!user) setShowAuthModal(true);
               }}
-              onShare={() => {
-                if (!user) setShowAuthModal(true);
-              }}
+              onShare={() => handleShare(post)}
             />
           ))}
         </AuthenticatedContent>

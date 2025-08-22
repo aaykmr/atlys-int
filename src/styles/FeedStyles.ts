@@ -2,62 +2,9 @@ import styled from "styled-components";
 
 export const FeedContainer = styled.div`
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #ffffff;
   color: #333;
-`;
-
-export const FeedHeader = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e0e0e0;
-
-  h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #333;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-`;
-
-export const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  span {
-    font-size: 1rem;
-    color: #666;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-`;
-
-export const LogoutButton = styled.button`
-  padding: 0.5rem 1rem;
-  background: #007bff;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-
-  &:hover {
-    background: #0056b3;
-  }
+  padding-top: 70px;
 `;
 
 export const FeedMain = styled.main`
@@ -195,10 +142,10 @@ export const EmojiButton = styled.button`
 
 export const EmojiPicker = styled.div`
   position: absolute;
-  top: 100%;
+  top: 10%;
   left: 0;
   background: white;
-  border: 1px solid #ddd;
+  border: 5px solid #e8e8e8;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 0.5rem;
@@ -207,13 +154,31 @@ export const EmojiPicker = styled.div`
   gap: 0.25rem;
   z-index: 1000;
   min-width: 120px;
+  animation: expandEmojiPicker 0.3s ease-out forwards;
+  transform-origin: top left;
+
+  @keyframes expandEmojiPicker {
+    from {
+      width: 0;
+      height: 0;
+      opacity: 0;
+      transform: scale(0);
+    }
+    to {
+      width: auto;
+      height: auto;
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 `;
 
 export const EmojiOption = styled.button<{ isSelected?: boolean }>`
-  background: ${(props) => (props.isSelected ? "#e3f2fd" : "transparent")};
-  border: 1px solid ${(props) => (props.isSelected ? "#2196f3" : "#ddd")};
-  border-radius: 4px;
-  font-size: 1.2rem;
+  background: #e8e8e8;
+  border-radius: 100px;
+  border: none;
+  font-size: 1rem;
+  line-height: 1.2rem;
   cursor: pointer;
   padding: 0.5rem;
   transition: all 0.2s ease;
@@ -349,30 +314,51 @@ export const ActionButton = styled.button`
 `;
 
 export const SendButton = styled.button`
-  padding: 0.5rem 1rem;
-  background: #007bff;
-  color: white;
+  background: transparent;
+  color: purple;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  font-size: 0.9rem;
+  transition: color 1s ease;
   display: flex;
   align-items: center;
   gap: 0.25rem;
 
+  svg {
+    font-size: 1.8rem !important;
+  }
   &:hover {
-    background: #0056b3;
+    color: rgb(20, 88, 160);
   }
 `;
 
 // Post Styles
-export const Post = styled.div`
+export const Post = styled.div<{ isNew?: boolean }>`
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   margin-bottom: 1rem;
+  opacity: ${(props) => (props.isNew ? 0 : 1)};
+  transform: ${(props) =>
+    props.isNew ? "translateY(-100px) scale(1)" : "translateY(0) scale(1)"};
+  animation: ${(props) =>
+    props.isNew ? "slideInFromTop 0.5s ease-out forwards" : "none"};
+  transform-origin: top;
+  transition: transform 1s ease-out;
+
+  @keyframes slideInFromTop {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Subtle animation for existing posts when new post is added */
+  &:not(:first-child) {
+    animation-delay: 0.1s;
+  }
 `;
 
 export const PostHeader = styled.div`
@@ -422,6 +408,13 @@ export const PostContent = styled.div`
 export const PostEmoji = styled.span`
   font-size: 1.5rem;
   flex-shrink: 0;
+  line-height: 1.5rem;
+  background: #e8e8e8;
+  border-radius: 100px;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const PostText = styled.div`
@@ -529,4 +522,54 @@ export const PostActionButton = styled.button`
     background: #f0f0f0;
     color: #007bff;
   }
+`;
+
+// Comment Styles
+export const CommentSection = styled.div`
+  margin-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+`;
+
+export const CommentInput = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+export const CommentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+`;
+
+export const CommentItem = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+`;
+
+export const CommentContent = styled.div`
+  flex: 1;
+`;
+
+export const CommentUser = styled.div`
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+`;
+
+export const CommentText = styled.div`
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+`;
+
+export const CommentTime = styled.div`
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.25rem;
 `;
