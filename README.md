@@ -1,46 +1,168 @@
-# Getting Started with Create React App
+# Atlys React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React TypeScript application with authentication functionality, featuring login/signup components and a beautiful UI.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Authentication System**: Complete login and signup functionality
+- **Email/Username Detection**: Automatically detects if input is email or username
+- **Form Validation**: Comprehensive client-side validation
+- **Modal Authentication**: Login/signup modal for unauthenticated users
+- **Local Storage**: User data persistence using localStorage
+- **Responsive Design**: Mobile-friendly interface
+- **TypeScript**: Full TypeScript support for type safety
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React 18
+- TypeScript
+- React Router DOM
+- Styled Components for styling
+- LocalStorage for data persistence
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 22.16.0 (specified in .nvmrc)
+- npm or yarn
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository
+2. Install dependencies:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   npm install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the development server:
 
-### `npm run eject`
+   ```bash
+   npm start
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+src/
+├── components/          # Reusable components
+│   ├── AuthModal.tsx   # Authentication modal
+│   ├── Login.tsx       # Login form component
+│   ├── Modal.tsx       # Reusable modal component
+│   ├── Signup.tsx      # Signup form component
+│   ├── Auth.css        # Authentication styles
+│   └── Modal.css       # Modal styles
+├── pages/              # Page components
+│   ├── Home.tsx        # Home page with dashboard
+│   ├── Auth.tsx        # Dedicated auth page
+│   ├── Home.css        # Home page styles
+│   └── Auth.css        # Auth page styles
+├── types/              # TypeScript type definitions
+│   └── auth.ts         # Authentication types
+├── utils/              # Utility functions
+│   └── auth.ts         # Authentication utilities
+└── App.tsx             # Main application component
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Authentication Features
 
-## Learn More
+### Login
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Accepts email or username
+- Password validation
+- Auto-detection of email vs username format
+- Error handling and user feedback
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Signup
+
+- Email or username registration
+- Email validation for email format
+- Username validation (3+ characters, alphanumeric + underscore)
+- Password confirmation
+- Duplicate user prevention
+
+### Data Storage
+
+- User data stored in localStorage as JSON
+- Current user session management
+- Secure password handling (client-side only)
+- Demo users always available for testing:
+  - `demo@example.com` / `password123`
+  - `test@user.com` / `testpass`
+
+## Usage
+
+### Demo Users
+
+The application comes with two demo users that are always available for testing:
+
+- **Email**: `demo@example.com` | **Password**: `password123`
+- **Email**: `test@user.com` | **Password**: `testpass`
+
+These demo users are automatically created when the app is first loaded and cannot be deleted or overwritten.
+
+### Home Page (`/`)
+
+- Shows authentication modal if user is not logged in
+- Displays user dashboard when authenticated
+- Logout functionality
+- Coding area for future development
+
+### Login Page (`/login`)
+
+- Dedicated login page
+- Direct access to login form
+- Link to signup page
+
+### Signup Page (`/signup`)
+
+- Dedicated signup page
+- Direct access to signup form
+- Link to login page
+
+## Development
+
+### Available Scripts
+
+- `npm start` - Runs the app in development mode
+- `npm test` - Launches the test runner
+- `npm run build` - Builds the app for production
+- `npm run eject` - Ejects from Create React App
+
+### Node Version
+
+This project uses Node.js 22.16.0. Use `nvm use` to automatically switch to the correct version.
+
+## Styling
+
+The application uses Styled Components with:
+
+- CSS-in-JS for component-scoped styling
+- Responsive design with media queries
+- Smooth animations and transitions
+- Glassmorphism effects
+- Modern gradient backgrounds
+
+## Future Enhancements
+
+- Backend API integration
+- JWT token authentication
+- Password hashing
+- User profile management
+- Social login options
+- Password reset functionality
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
