@@ -8,7 +8,8 @@ import {
   UserInfo,
   LogoutButton,
 } from "../styles/NavbarStyles";
-
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 interface NavbarProps {
   user: User | null;
   onLogout: () => void;
@@ -27,10 +28,16 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onLoginClick }) => {
           {user ? (
             <>
               <span>Hello, {user.username}!</span>
-              <LogoutButton onClick={onLogout}>Logout</LogoutButton>
+              <LogoutButton onClick={onLogout}>
+                Logout
+                <LogoutIcon fontSize="small" />
+              </LogoutButton>
             </>
           ) : (
-            <LogoutButton onClick={onLoginClick}>Login / Sign Up</LogoutButton>
+            <LogoutButton onClick={onLoginClick}>
+              Login
+              <LoginIcon fontSize="small" />
+            </LogoutButton>
           )}
         </UserInfo>
       </NavbarContent>

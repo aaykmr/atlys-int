@@ -58,15 +58,18 @@ export const UserInfo = styled.div`
 `;
 
 export const LogoutButton = styled.button`
-  background: #007bff;
-  color: white;
+  background: transparent;
+  color: #000;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 1.2rem;
+  font-weight: 600;
   transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
 
   &:hover {
     background: #0056b3;
@@ -74,5 +77,9 @@ export const LogoutButton = styled.button`
 
   &:active {
     transform: translateY(1px);
+  }
+
+  svg {
+    font-size: 1.8rem;
   }
 `;
