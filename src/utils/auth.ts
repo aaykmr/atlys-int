@@ -67,15 +67,22 @@ export const registerUser = (
     return { success: false, message: "Passwords do not match" };
   }
 
-  // Check if user already exists
-  const existingUser = users.find(
-    (user) =>
-      (user.email && user.email === formData.identifier) ||
-      (user.username && user.username === formData.identifier)
-  );
+  // Check if email already exists
+  if (isEmail(formData.identifier)) {
+    const existingUser = users.find(
+      (user) => user.email === formData.identifier
+    );
+    if (existingUser) {
+      return { success: false, message: "Email already registered" };
+    }
+  }
 
-  if (existingUser) {
-    return { success: false, message: "User already exists" };
+  // Check if username already exists
+  const existingUsername = users.find(
+    (user) => user.username === formData.username
+  );
+  if (existingUsername) {
+    return { success: false, message: "Username already taken" };
   }
 
   // Prevent registration with demo email addresses
@@ -93,14 +100,13 @@ export const registerUser = (
   // Create new user
   const newUser: User = {
     id: Date.now().toString(),
+    username: formData.username,
     password: formData.password,
   };
 
-  // Set email or username based on identifier type
+  // Set email if identifier is an email
   if (isEmail(formData.identifier)) {
     newUser.email = formData.identifier;
-  } else {
-    newUser.username = formData.identifier;
   }
 
   users.push(newUser);

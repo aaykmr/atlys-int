@@ -17,6 +17,7 @@ export interface LoginFormData {
 
 export interface SignupFormData {
   identifier: string; // email or username
+  username: string; // separate username field
   password: string;
   repeatPassword: string;
 }

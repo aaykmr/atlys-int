@@ -30,6 +30,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<SignupFormData>({
     identifier: "",
+    username: "",
     password: "",
     repeatPassword: "",
   });
@@ -37,10 +38,16 @@ const SignupForm: React.FC<SignupFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [validation, setValidation] = useState({
     identifier: { isValid: false, hasValue: false },
+    username: { isValid: false, hasValue: false },
     password: { isValid: false, hasValue: false },
     repeatPassword: { isValid: false, hasValue: false },
   });
   const [isVisible, setIsVisible] = useState(true);
+
+  // Auto-generate username from email
+  const generateUsernameFromEmail = (email: string): string => {
+    return email.split("@")[0];
+  };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -64,6 +71,16 @@ const SignupForm: React.FC<SignupFormProps> = ({
             "Username can only contain letters, numbers, and underscores";
         }
       }
+    }
+
+    // Validate username field
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      newErrors.username =
+        "Username can only contain letters, numbers, and underscores";
     }
 
     if (!formData.password) {
@@ -115,12 +132,38 @@ const SignupForm: React.FC<SignupFormProps> = ({
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
+    // Auto-populate username when email is entered
+    if (name === "identifier" && isEmail(value)) {
+      const generatedUsername = generateUsernameFromEmail(value);
+      setFormData((prev) => ({ ...prev, username: generatedUsername }));
+
+      // Update username validation
+      const usernameHasValue = generatedUsername.trim().length > 0;
+      const usernameIsValid =
+        generatedUsername.trim().length >= 3 &&
+        /^[a-zA-Z0-9_]+$/.test(generatedUsername);
+
+      setValidation((prev) => ({
+        ...prev,
+        username: { isValid: usernameIsValid, hasValue: usernameHasValue },
+      }));
+    }
+
     // Update validation state
     const hasValue = value.trim().length > 0;
     let isValid = false;
 
     if (name === "identifier") {
-      isValid = hasValue && value.trim().length >= 3;
+      if (isEmail(value)) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        isValid = hasValue && emailRegex.test(value);
+      } else {
+        isValid =
+          hasValue && value.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(value);
+      }
+    } else if (name === "username") {
+      isValid =
+        hasValue && value.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(value);
     } else if (name === "password") {
       isValid = hasValue && value.length >= 6;
     } else if (name === "repeatPassword") {
@@ -184,6 +227,35 @@ const SignupForm: React.FC<SignupFormProps> = ({
               </ValidationIcon>
               {errors.identifier && (
                 <ErrorMessage>{errors.identifier}</ErrorMessage>
+              )}
+            </FormGroup>
+
+            <FormGroup>
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className={
+                  errors.username
+                    ? "error"
+                    : validation.username.hasValue &&
+                      validation.username.isValid
+                    ? "success"
+                    : ""
+                }
+                placeholder="Choose a username"
+              />
+              <ValidationIcon
+                isValid={validation.username.isValid}
+                hasValue={validation.username.hasValue}
+              >
+                {validation.username.isValid && <VerifiedRoundedIcon />}
+              </ValidationIcon>
+              {errors.username && (
+                <ErrorMessage>{errors.username}</ErrorMessage>
               )}
             </FormGroup>
 
