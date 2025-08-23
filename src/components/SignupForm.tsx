@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { SignupFormData } from "../types/auth";
 import { registerUser, isEmail } from "../utils/auth";
-import SuccessPopup from "./SuccessPopup";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   AuthForm,
@@ -43,7 +44,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
     repeatPassword: { isValid: false, hasValue: false },
   });
   const [isVisible, setIsVisible] = useState(true);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Auto-generate username from email
   const generateUsernameFromEmail = (email: string): string => {
@@ -103,8 +103,13 @@ const SignupForm: React.FC<SignupFormProps> = ({
       const result = registerUser(formData);
 
       if (result.success) {
-        setShowSuccessPopup(true);
-        // Don't call onSignupSuccess immediately, let the popup handle it
+        toast.success(
+          "Your account has been created successfully! You can now sign in."
+        );
+        // Redirect to login after a short delay to let user see the toast
+        setTimeout(() => {
+          onSignupSuccess();
+        }, 1500);
       } else {
         setErrors({ general: result.message });
       }
@@ -113,11 +118,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleSuccessPopupClose = () => {
-    setShowSuccessPopup(false);
-    onSignupSuccess(); // Now redirect to login
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -295,11 +295,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
           </p>
         </AuthSwitch>
       </AuthFormWrapper>
-      <SuccessPopup
-        isVisible={showSuccessPopup}
-        onClose={handleSuccessPopupClose}
-        message="Your account has been created successfully! You can now sign in."
-      />
     </AuthForm>
   );
 };
