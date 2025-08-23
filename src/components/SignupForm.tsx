@@ -83,6 +83,11 @@ const SignupForm: React.FC<SignupFormProps> = ({
         "Username can only contain letters, numbers, and underscores";
     }
 
+    // If identifier is an email, ensure username is auto-generated
+    if (isEmail(formData.identifier) && !formData.username.trim()) {
+      newErrors.username = "Username will be auto-generated from your email";
+    }
+
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
@@ -137,11 +142,9 @@ const SignupForm: React.FC<SignupFormProps> = ({
       const generatedUsername = generateUsernameFromEmail(value);
       setFormData((prev) => ({ ...prev, username: generatedUsername }));
 
-      // Update username validation
+      // Update username validation - username is always valid when auto-generated from email
       const usernameHasValue = generatedUsername.trim().length > 0;
-      const usernameIsValid =
-        generatedUsername.trim().length >= 3 &&
-        /^[a-zA-Z0-9_]+$/.test(generatedUsername);
+      const usernameIsValid = generatedUsername.trim().length >= 3;
 
       setValidation((prev) => ({
         ...prev,
@@ -231,13 +234,14 @@ const SignupForm: React.FC<SignupFormProps> = ({
             </FormGroup>
 
             <FormGroup>
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Username (Auto-generated)</label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
+                readOnly
                 className={
                   errors.username
                     ? "error"
@@ -246,7 +250,8 @@ const SignupForm: React.FC<SignupFormProps> = ({
                     ? "success"
                     : ""
                 }
-                placeholder="Choose a username"
+                placeholder="Username will be auto-generated"
+                style={{ backgroundColor: "#f8f9fa", cursor: "not-allowed" }}
               />
               <ValidationIcon
                 isValid={validation.username.isValid}
