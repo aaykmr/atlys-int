@@ -22,14 +22,25 @@ const GitHubPagesRouter: React.FC = () => {
     // Handle GitHub Pages routing with query parameters
     const query = new URLSearchParams(location.search);
     const redirectPath = query.get("/");
-
+    
     if (redirectPath) {
       // Clean up the path and navigate
       const cleanPath = redirectPath.replace(/~and~/g, "&");
       console.log("Redirecting to:", cleanPath); // Debug log
-      navigate(cleanPath, { replace: true });
+      
+      // Force navigation with a slight delay to ensure proper routing
+      setTimeout(() => {
+        navigate(cleanPath, { replace: true });
+      }, 100);
     }
   }, [location.search, navigate]);
+
+  // Handle direct navigation for development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Current location:", location.pathname);
+    }
+  }, [location.pathname]);
 
   return (
     <Routes>
