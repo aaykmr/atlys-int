@@ -82,7 +82,7 @@ export const registerUser = (
     (user) => user.username === formData.username
   );
   if (existingUsername) {
-    return { success: false, message: "Username already taken" };
+    return { success: false, message: "Email/username already taken" };
   }
 
   // Prevent registration with demo email addresses
