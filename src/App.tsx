@@ -26,6 +26,7 @@ const GitHubPagesRouter: React.FC = () => {
     if (redirectPath) {
       // Clean up the path and navigate
       const cleanPath = redirectPath.replace(/~and~/g, "&");
+      console.log("Redirecting to:", cleanPath); // Debug log
       navigate(cleanPath, { replace: true });
     }
   }, [location.search, navigate]);
