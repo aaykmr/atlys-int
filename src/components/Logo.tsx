@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import logoImage from "../assets/images/logo512.png";
 
 const LogoContainer = styled.div`
   display: flex;
@@ -16,7 +17,7 @@ const LogoContainer = styled.div`
 const Logo: React.FC = () => {
   return (
     <LogoContainer>
-      <img src="/logo512.png" alt="foo-rum logo" />
+      <img src={logoImage} alt="foo-rum logo" />
     </LogoContainer>
   );
 };
