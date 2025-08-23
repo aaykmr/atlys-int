@@ -1,14 +1,23 @@
 import React, { useState } from "react";
+import LoginIcon from "@mui/icons-material/Login";
 import { SignupFormData } from "../types/auth";
 import { registerUser, isEmail } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 import {
   AuthForm,
+  AuthFormContent,
+  AuthFormWrapper,
+  AuthIconContainer,
+  AuthIconCircle,
+  AuthSubtitle,
   FormGroup,
+  ValidationIcon,
   ErrorMessage,
   SubmitButton,
   AuthSwitch,
   SwitchButton,
 } from "../styles/AuthStyles";
+import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -19,6 +28,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
   onSwitchToLogin,
   onSignupSuccess,
 }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<SignupFormData>({
     identifier: "",
     password: "",
@@ -26,6 +36,12 @@ const SignupForm: React.FC<SignupFormProps> = ({
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [validation, setValidation] = useState({
+    identifier: { isValid: false, hasValue: false },
+    password: { isValid: false, hasValue: false },
+    repeatPassword: { isValid: false, hasValue: false },
+  });
+  const [isVisible, setIsVisible] = useState(true);
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -99,79 +115,160 @@ const SignupForm: React.FC<SignupFormProps> = ({
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+
+    // Update validation state
+    const hasValue = value.trim().length > 0;
+    let isValid = false;
+
+    if (name === "identifier") {
+      isValid = hasValue && value.trim().length >= 3;
+    } else if (name === "password") {
+      isValid = hasValue && value.length >= 6;
+    } else if (name === "repeatPassword") {
+      isValid = hasValue && value === formData.password;
+    }
+
+    setValidation((prev) => ({
+      ...prev,
+      [name]: { isValid, hasValue },
+    }));
   };
 
   const getIdentifierLabel = () => {
     return isEmail(formData.identifier) ? "Email" : "Username";
   };
 
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
+  const handleSwitchToLogin = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onSwitchToLogin();
+    }, 200);
+  };
+
   return (
     <AuthForm>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <FormGroup>
-          <label htmlFor="identifier">{getIdentifierLabel()}</label>
-          <input
-            type="text"
-            id="identifier"
-            name="identifier"
-            value={formData.identifier}
-            onChange={handleInputChange}
-            className={errors.identifier ? "error" : ""}
-            placeholder="Enter your email or username"
-          />
-          {errors.identifier && (
-            <ErrorMessage>{errors.identifier}</ErrorMessage>
-          )}
-        </FormGroup>
+      <AuthFormWrapper isVisible={isVisible}>
+        <AuthFormContent>
+          <AuthIconContainer>
+            <AuthIconCircle>
+              <LoginIcon style={{ fontSize: "2rem", color: "#333" }} />
+            </AuthIconCircle>
+          </AuthIconContainer>
+          <h2>Create an account to continue</h2>
+          <AuthSubtitle>
+            Create an account to access all the features on this app
+          </AuthSubtitle>
+          <form onSubmit={handleSubmit}>
+            <FormGroup>
+              <label htmlFor="identifier">{getIdentifierLabel()}</label>
+              <input
+                type="text"
+                id="identifier"
+                name="identifier"
+                value={formData.identifier}
+                onChange={handleInputChange}
+                className={
+                  errors.identifier
+                    ? "error"
+                    : validation.identifier.hasValue &&
+                      validation.identifier.isValid
+                    ? "success"
+                    : ""
+                }
+                placeholder="Enter your email or username"
+              />
+              <ValidationIcon
+                isValid={validation.identifier.isValid}
+                hasValue={validation.identifier.hasValue}
+              >
+                {validation.identifier.isValid && <VerifiedRoundedIcon />}
+              </ValidationIcon>
+              {errors.identifier && (
+                <ErrorMessage>{errors.identifier}</ErrorMessage>
+              )}
+            </FormGroup>
 
-        <FormGroup>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            className={errors.password ? "error" : ""}
-            placeholder="Enter your password"
-          />
-          {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
-        </FormGroup>
+            <FormGroup>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={
+                  errors.password
+                    ? "error"
+                    : validation.password.hasValue &&
+                      validation.password.isValid
+                    ? "success"
+                    : ""
+                }
+                placeholder="Enter your password"
+              />
+              <ValidationIcon
+                isValid={validation.password.isValid}
+                hasValue={validation.password.hasValue}
+              >
+                {validation.password.isValid && <VerifiedRoundedIcon />}
+              </ValidationIcon>
+              {errors.password && (
+                <ErrorMessage>{errors.password}</ErrorMessage>
+              )}
+            </FormGroup>
 
-        <FormGroup>
-          <label htmlFor="repeatPassword">Repeat Password</label>
-          <input
-            type="password"
-            id="repeatPassword"
-            name="repeatPassword"
-            value={formData.repeatPassword}
-            onChange={handleInputChange}
-            className={errors.repeatPassword ? "error" : ""}
-            placeholder="Repeat your password"
-          />
-          {errors.repeatPassword && (
-            <ErrorMessage>{errors.repeatPassword}</ErrorMessage>
-          )}
-        </FormGroup>
+            <FormGroup>
+              <label htmlFor="repeatPassword">Repeat Password</label>
+              <input
+                type="password"
+                id="repeatPassword"
+                name="repeatPassword"
+                value={formData.repeatPassword}
+                onChange={handleInputChange}
+                className={
+                  errors.repeatPassword
+                    ? "error"
+                    : validation.repeatPassword.hasValue &&
+                      validation.repeatPassword.isValid
+                    ? "success"
+                    : ""
+                }
+                placeholder="Repeat your password"
+              />
+              <ValidationIcon
+                isValid={validation.repeatPassword.isValid}
+                hasValue={validation.repeatPassword.hasValue}
+              >
+                {validation.repeatPassword.isValid && <VerifiedRoundedIcon />}
+              </ValidationIcon>
+              {errors.repeatPassword && (
+                <ErrorMessage>{errors.repeatPassword}</ErrorMessage>
+              )}
+            </FormGroup>
 
-        {errors.general && (
-          <ErrorMessage className="general">{errors.general}</ErrorMessage>
-        )}
+            {errors.general && (
+              <ErrorMessage className="general">{errors.general}</ErrorMessage>
+            )}
 
-        <SubmitButton type="submit" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Sign Up"}
-        </SubmitButton>
-      </form>
+            <SubmitButton type="submit" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Sign Up"}
+            </SubmitButton>
+          </form>
+        </AuthFormContent>
 
-      <AuthSwitch>
-        <p>
-          Already have an account?{" "}
-          <SwitchButton type="button" onClick={onSwitchToLogin}>
-            Login
-          </SwitchButton>
-        </p>
-      </AuthSwitch>
+        <AuthSwitch>
+          <p>
+            Already have an account?{" "}
+            <SwitchButton type="button" onClick={handleSwitchToLogin}>
+              Sign In
+            </SwitchButton>
+          </p>
+        </AuthSwitch>
+      </AuthFormWrapper>
     </AuthForm>
   );
 };

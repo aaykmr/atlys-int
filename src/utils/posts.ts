@@ -30,6 +30,9 @@ export const createPost = (postData: CreatePostData, user: User): Post => {
     likes: 0,
     comments: 0,
     shares: 0,
+    attachments: postData.attachments || [],
+    voiceRecording: postData.voiceRecording || "",
+    cameraImage: postData.cameraImage || "",
   };
 
   posts.unshift(newPost); // Add to beginning of array

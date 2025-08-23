@@ -48,9 +48,18 @@ const Feed: React.FC = () => {
     setShowAuthModal(false);
   };
 
-  const handleCreatePost = (content: string, emoji: string) => {
+  const handleCreatePost = (
+    content: string,
+    emoji: string,
+    attachments: string[],
+    voiceRecording: string,
+    cameraImage: string
+  ) => {
     if (user) {
-      const newPost = createPost({ content, emoji }, user);
+      const newPost = createPost(
+        { content, emoji, attachments, voiceRecording, cameraImage },
+        user
+      );
       setPendingNewPost(newPost);
       setNewPostId(newPost.id);
 
@@ -105,6 +114,9 @@ const Feed: React.FC = () => {
               comments={post.comments}
               shares={post.shares}
               isNew={post.id === newPostId}
+              attachments={post.attachments}
+              voiceRecording={post.voiceRecording}
+              cameraImage={post.cameraImage}
               onLike={() => {
                 if (!user) setShowAuthModal(true);
               }}

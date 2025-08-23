@@ -10,13 +10,23 @@ import {
 } from "../styles/NavbarStyles";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import HomeIcon from "@mui/icons-material/Home";
+
 interface NavbarProps {
   user: User | null;
   onLogout: () => void;
   onLoginClick: () => void;
+  onBackToHome?: () => void;
+  isOnAuthPage?: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onLoginClick }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  user,
+  onLogout,
+  onLoginClick,
+  onBackToHome,
+  isOnAuthPage,
+}) => {
   return (
     <NavbarContainer>
       <NavbarContent>
@@ -34,9 +44,15 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onLoginClick }) => {
               </LogoutButton>
             </>
           ) : (
-            <LogoutButton onClick={onLoginClick}>
-              Login
-              <LoginIcon fontSize="small" />
+            <LogoutButton onClick={onBackToHome || onLoginClick}>
+              {onBackToHome && isOnAuthPage ? (
+                <>Back to home</>
+              ) : (
+                <>
+                  Login
+                  <LoginIcon fontSize="small" />
+                </>
+              )}
             </LogoutButton>
           )}
         </UserInfo>

@@ -37,7 +37,13 @@ import {
 } from "../styles/FeedStyles";
 
 interface RichTextEditorProps {
-  onPost: (content: string, emoji: string) => void;
+  onPost: (
+    content: string,
+    emoji: string,
+    attachments: string[],
+    voiceRecording: string,
+    cameraImage: string
+  ) => void;
 }
 
 export interface RichTextEditorRef {
@@ -55,6 +61,9 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     const [showCodeBlock, setShowCodeBlock] = useState(false);
     const [currentHeading, setCurrentHeading] = useState<string>("paragraph");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [attachments, setAttachments] = useState<string[]>([]);
+    const [voiceRecording, setVoiceRecording] = useState<string>("");
+    const [cameraImage, setCameraImage] = useState<string>("");
     const editorRef = useRef<HTMLDivElement>(null);
 
     const emojis = ["😊", "😢", "👍", "💀", "🎉", "🔥", "❤️", "😎", "🤞", "👌"];
@@ -193,11 +202,20 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
       if (editorRef.current && editorRef.current.innerHTML.trim()) {
         const content = editorRef.current.innerHTML;
         console.log("Sending HTML content:", content); // Debug log
-        onPost(content, selectedEmoji);
+        onPost(
+          content,
+          selectedEmoji,
+          attachments,
+          voiceRecording,
+          cameraImage
+        );
         editorRef.current.innerHTML = "";
         setSelectedEmoji("😊");
         setListType("none");
         setShowCodeBlock(false);
+        setAttachments([]);
+        setVoiceRecording("");
+        setCameraImage("");
       }
     };
 
@@ -214,6 +232,104 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     const handleEmojiSelect = (emoji: string) => {
       setSelectedEmoji(emoji);
       setShowEmojiPicker(false);
+    };
+
+    const handleAddAttachment = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*,.pdf,.doc,.docx,.txt";
+      input.multiple = true;
+
+      input.onchange = (e) => {
+        const files = (e.target as HTMLInputElement).files;
+        if (files) {
+          const newAttachments = Array.from(files).map((file) => {
+            if (file.type.startsWith("image/")) {
+              return URL.createObjectURL(file);
+            }
+            return file.name;
+          });
+          setAttachments((prev) => [...prev, ...newAttachments]);
+        }
+      };
+
+      input.click();
+    };
+
+    const handleVoiceInput = () => {
+      if ("webkitSpeechRecognition" in window) {
+        const recognition = new (window as any).webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onstart = () => {
+          setVoiceRecording("Listening...");
+        };
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setVoiceRecording(transcript);
+
+          // Insert the transcript into the editor
+          if (editorRef.current) {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+              const range = selection.getRangeAt(0);
+              range.insertNode(document.createTextNode(transcript + " "));
+            } else {
+              editorRef.current.innerHTML += transcript + " ";
+            }
+          }
+        };
+
+        recognition.onerror = () => {
+          setVoiceRecording("Voice input failed");
+        };
+
+        recognition.onend = () => {
+          setTimeout(() => setVoiceRecording(""), 2000);
+        };
+
+        recognition.start();
+      } else {
+        alert("Voice input is not supported in this browser");
+      }
+    };
+
+    const handleCamera = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "camera";
+
+      input.onchange = (e) => {
+        const files = (e.target as HTMLInputElement).files;
+        if (files && files[0]) {
+          const imageUrl = URL.createObjectURL(files[0]);
+          setCameraImage(imageUrl);
+
+          // Insert the image into the editor
+          if (editorRef.current) {
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.style.maxWidth = "100%";
+            img.style.height = "auto";
+            img.style.borderRadius = "8px";
+            img.style.margin = "8px 0";
+
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+              const range = selection.getRangeAt(0);
+              range.insertNode(img);
+            } else {
+              editorRef.current.appendChild(img);
+            }
+          }
+        }
+      };
+
+      input.click();
     };
 
     // Close emoji picker when clicking outside
@@ -426,16 +542,228 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
               flex: 1,
             }}
           />
+
+          {/* Display attachments in editor */}
+          {attachments.length > 0 && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                background: "#f8f9fa",
+                borderRadius: "8px",
+                border: "1px solid #e9ecef",
+              }}
+            >
+              <h4
+                style={{
+                  margin: "0 0 0.75rem 0",
+                  fontSize: "0.9rem",
+                  color: "#666",
+                }}
+              >
+                📎 Attachments ({attachments.length})
+              </h4>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                {attachments.map((attachment, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      position: "relative",
+                      padding: "0.5rem",
+                      background: "white",
+                      borderRadius: "6px",
+                      fontSize: "0.8rem",
+                      border: "1px solid #dee2e6",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    {attachment.startsWith("blob:") ? (
+                      <img
+                        src={attachment}
+                        alt="Attachment"
+                        style={{
+                          maxWidth: "80px",
+                          maxHeight: "80px",
+                          borderRadius: "4px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <span>📄 {attachment}</span>
+                    )}
+                    <button
+                      onClick={() => {
+                        setAttachments((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+                      }}
+                      style={{
+                        position: "absolute",
+                        top: "-8px",
+                        right: "-8px",
+                        background: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "20px",
+                        height: "20px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                      }}
+                      title="Remove attachment"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Display voice recording in editor */}
+          {voiceRecording && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem",
+                background: "#e3f2fd",
+                borderRadius: "8px",
+                border: "1px solid #bbdefb",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <span style={{ fontSize: "1.2rem" }}>🎤</span>
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "bold",
+                    color: "#1976d2",
+                  }}
+                >
+                  Voice Recording
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: "0.9rem", color: "#1565c0" }}>
+                "{voiceRecording}"
+              </p>
+              <button
+                onClick={() => setVoiceRecording("")}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "20px",
+                  height: "20px",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                }}
+                title="Remove voice recording"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {/* Display camera image in editor */}
+          {cameraImage && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                background: "#f8f9fa",
+                borderRadius: "8px",
+                border: "1px solid #e9ecef",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  margin: "0 0 0.75rem 0",
+                  fontSize: "0.9rem",
+                  color: "#666",
+                }}
+              >
+                📷 Camera Photo
+              </h4>
+              <img
+                src={cameraImage}
+                alt="Camera photo"
+                style={{
+                  maxWidth: "200px",
+                  borderRadius: "8px",
+                  border: "1px solid #e0e0e0",
+                }}
+              />
+              <button
+                onClick={() => setCameraImage("")}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "20px",
+                  height: "20px",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                }}
+                title="Remove camera photo"
+              >
+                ×
+              </button>
+            </div>
+          )}
         </EditorInput>
 
         <EditorActions>
-          <ActionButtonContained title="Add attachment">
+          <ActionButtonContained
+            title="Add attachment"
+            onClick={handleAddAttachment}
+          >
             <AddIcon fontSize="small" />
           </ActionButtonContained>
-          <ActionButton title="Voice input">
+          <ActionButton title="Voice input" onClick={handleVoiceInput}>
             <MicIcon fontSize="small" />
+            {voiceRecording && (
+              <span
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#007bff",
+                  marginLeft: "0.5rem",
+                  fontStyle: "italic",
+                }}
+              >
+                {voiceRecording}
+              </span>
+            )}
           </ActionButton>
-          <ActionButton title="Camera">
+          <ActionButton title="Camera" onClick={handleCamera}>
             <VideocamIcon fontSize="small" />
           </ActionButton>
 

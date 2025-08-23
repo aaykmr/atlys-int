@@ -49,6 +49,9 @@ interface PostProps {
   comments: number;
   shares: number;
   isNew?: boolean;
+  attachments?: string[];
+  voiceRecording?: string;
+  cameraImage?: string;
   onLike?: () => void;
   onComment?: () => void;
   onShare?: () => void;
@@ -64,6 +67,9 @@ const Post: React.FC<PostProps> = ({
   comments,
   shares,
   isNew = false,
+  attachments = [],
+  voiceRecording = "",
+  cameraImage = "",
   onLike,
   onComment,
   onShare,
@@ -153,6 +159,23 @@ const Post: React.FC<PostProps> = ({
       console.error("Error creating comment:", error);
     }
   };
+
+  const handleDownloadAttachment = (attachment: string, index: number) => {
+    if (attachment.startsWith("blob:")) {
+      // For blob URLs (images), create a download link
+      const link = document.createElement("a");
+      link.href = attachment;
+      link.download = `attachment-${index + 1}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // For file names, try to find the actual file or show a message
+      alert(
+        `File: ${attachment}\n\nNote: This file was uploaded in a previous session and may not be available for download.`
+      );
+    }
+  };
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -182,6 +205,166 @@ const Post: React.FC<PostProps> = ({
         <PostContent>
           <PostEmoji>{emoji}</PostEmoji>
           <PostText dangerouslySetInnerHTML={{ __html: content }} />
+
+          {/* Display attachments */}
+          {attachments && attachments.length > 0 && (
+            <div style={{ marginTop: "1rem" }}>
+              <h4
+                style={{
+                  margin: "0 0 0.5rem 0",
+                  fontSize: "0.9rem",
+                  color: "#666",
+                }}
+              >
+                📎 Attachments ({attachments.length})
+              </h4>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                {attachments.map((attachment, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: "0.5rem",
+                      background: "#f8f9fa",
+                      borderRadius: "6px",
+                      fontSize: "0.8rem",
+                      border: "1px solid #e9ecef",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#e9ecef";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#f8f9fa";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                    onClick={() => handleDownloadAttachment(attachment, index)}
+                    title="Click to download"
+                  >
+                    {attachment.startsWith("blob:") ? (
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={attachment}
+                          alt="Attachment"
+                          style={{
+                            maxWidth: "100px",
+                            maxHeight: "100px",
+                            borderRadius: "4px",
+                            display: "block",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            background: "rgba(0,0,0,0.7)",
+                            color: "white",
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "4px",
+                            fontSize: "0.7rem",
+                            opacity: 0,
+                            transition: "opacity 0.2s ease",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.opacity = "1")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.opacity = "0")
+                          }
+                        >
+                          Download
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <span>📄</span>
+                        <span>{attachment}</span>
+                        <span
+                          style={{
+                            fontSize: "0.7rem",
+                            color: "#007bff",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ↓
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Display voice recording */}
+          {voiceRecording && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem",
+                background: "#e3f2fd",
+                borderRadius: "8px",
+                border: "1px solid #bbdefb",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <span style={{ fontSize: "1.2rem" }}>🎤</span>
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "bold",
+                    color: "#1976d2",
+                  }}
+                >
+                  Voice Recording
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: "0.9rem", color: "#1565c0" }}>
+                "{voiceRecording}"
+              </p>
+            </div>
+          )}
+
+          {/* Display camera image */}
+          {cameraImage && (
+            <div style={{ marginTop: "1rem" }}>
+              <h4
+                style={{
+                  margin: "0 0 0.5rem 0",
+                  fontSize: "0.9rem",
+                  color: "#666",
+                }}
+              >
+                📷 Camera Photo
+              </h4>
+              <img
+                src={cameraImage}
+                alt="Camera photo"
+                style={{
+                  maxWidth: "100%",
+                  borderRadius: "8px",
+                  border: "1px solid #e0e0e0",
+                }}
+              />
+            </div>
+          )}
         </PostContent>
       </PostInfo>
       <PostActions>

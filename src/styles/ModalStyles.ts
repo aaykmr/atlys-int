@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 const fadeIn = keyframes`
   from {
@@ -37,7 +37,7 @@ export const ModalOverlay = styled.div`
 export const ModalContent = styled.div`
   position: relative;
   background: white;
-  border-radius: 8px;
+  border-radius: 24px;
   max-width: 90vw;
   max-height: 90vh;
   overflow-y: auto;

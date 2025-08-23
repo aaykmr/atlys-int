@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
+import Navbar from "../components/Navbar";
 import { AuthPage, AuthContainer } from "../styles/AuthPageStyles";
 
 const LoginPage: React.FC = () => {
@@ -20,6 +21,13 @@ const LoginPage: React.FC = () => {
 
   return (
     <AuthPage>
+      <Navbar
+        user={null}
+        onLogout={() => {}}
+        onLoginClick={() => {}}
+        onBackToHome={() => navigate("/")}
+        isOnAuthPage={true}
+      />
       <AuthContainer>
         <LoginForm
           onSwitchToSignup={handleSwitchToSignup}

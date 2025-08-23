@@ -72,7 +72,7 @@ export const LogoutButton = styled.button`
   gap: 0.2rem;
 
   &:hover {
-    background: #0056b3;
+    background: rgb(222, 221, 221);
   }
 
   &:active {
