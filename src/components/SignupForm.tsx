@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { SignupFormData } from "../types/auth";
 import { registerUser, isEmail } from "../utils/auth";
+import SuccessPopup from "./SuccessPopup";
 
 import {
   AuthForm,
@@ -38,11 +39,11 @@ const SignupForm: React.FC<SignupFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [validation, setValidation] = useState({
     identifier: { isValid: false, hasValue: false },
-    username: { isValid: false, hasValue: false },
     password: { isValid: false, hasValue: false },
     repeatPassword: { isValid: false, hasValue: false },
   });
   const [isVisible, setIsVisible] = useState(true);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Auto-generate username from email
   const generateUsernameFromEmail = (email: string): string => {
@@ -71,21 +72,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
             "Username can only contain letters, numbers, and underscores";
         }
       }
-    }
-
-    // Validate username field
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
-    } else if (formData.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username =
-        "Username can only contain letters, numbers, and underscores";
-    }
-
-    // If identifier is an email, ensure username is auto-generated
-    if (isEmail(formData.identifier) && !formData.username.trim()) {
-      newErrors.username = "Username will be auto-generated from your email";
     }
 
     if (!formData.password) {
@@ -117,7 +103,8 @@ const SignupForm: React.FC<SignupFormProps> = ({
       const result = registerUser(formData);
 
       if (result.success) {
-        onSignupSuccess();
+        setShowSuccessPopup(true);
+        // Don't call onSignupSuccess immediately, let the popup handle it
       } else {
         setErrors({ general: result.message });
       }
@@ -126,6 +113,11 @@ const SignupForm: React.FC<SignupFormProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSuccessPopupClose = () => {
+    setShowSuccessPopup(false);
+    onSignupSuccess(); // Now redirect to login
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,9 +156,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
         isValid =
           hasValue && value.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(value);
       }
-    } else if (name === "username") {
-      isValid =
-        hasValue && value.trim().length >= 3 && /^[a-zA-Z0-9_]+$/.test(value);
     } else if (name === "password") {
       isValid = hasValue && value.length >= 6;
     } else if (name === "repeatPassword") {
@@ -177,10 +166,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
       ...prev,
       [name]: { isValid, hasValue },
     }));
-  };
-
-  const getIdentifierLabel = () => {
-    return isEmail(formData.identifier) ? "Email" : "Username";
   };
 
   const handleSwitchToLogin = () => {
@@ -205,7 +190,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
           </AuthSubtitle>
           <form onSubmit={handleSubmit}>
             <FormGroup>
-              <label htmlFor="identifier">{getIdentifierLabel()}</label>
+              <label htmlFor="identifier">Email or username</label>
               <input
                 type="text"
                 id="identifier"
@@ -230,37 +215,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
               </ValidationIcon>
               {errors.identifier && (
                 <ErrorMessage>{errors.identifier}</ErrorMessage>
-              )}
-            </FormGroup>
-
-            <FormGroup>
-              <label htmlFor="username">Username (Auto-generated)</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                readOnly
-                className={
-                  errors.username
-                    ? "error"
-                    : validation.username.hasValue &&
-                      validation.username.isValid
-                    ? "success"
-                    : ""
-                }
-                placeholder="Username will be auto-generated"
-                style={{ backgroundColor: "#f8f9fa", cursor: "not-allowed" }}
-              />
-              <ValidationIcon
-                isValid={validation.username.isValid}
-                hasValue={validation.username.hasValue}
-              >
-                {validation.username.isValid && <VerifiedRoundedIcon />}
-              </ValidationIcon>
-              {errors.username && (
-                <ErrorMessage>{errors.username}</ErrorMessage>
               )}
             </FormGroup>
 
@@ -341,6 +295,11 @@ const SignupForm: React.FC<SignupFormProps> = ({
           </p>
         </AuthSwitch>
       </AuthFormWrapper>
+      <SuccessPopup
+        isVisible={showSuccessPopup}
+        onClose={handleSuccessPopupClose}
+        message="Your account has been created successfully! You can now sign in."
+      />
     </AuthForm>
   );
 };
