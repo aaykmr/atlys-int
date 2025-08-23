@@ -25,6 +25,7 @@ import {
   PostText,
   PostActions,
   PostActionButton,
+  PostInfo,
   CommentSection,
   CommentInput,
   CommentList,
@@ -102,8 +103,27 @@ const Post: React.FC<PostProps> = ({
 
     try {
       const result = toggleLike(id, currentUser);
+      const previousCount = likeCount;
+
       setIsLiked(result.liked);
       setLikeCount(result.likes);
+
+      // Add animation class to the count number
+      const countElement = document.querySelector(
+        `[data-post-id="${id}"] .count-number`
+      ) as HTMLElement;
+      if (countElement) {
+        const animationClass =
+          result.likes > previousCount ? "countUp" : "countDown";
+        countElement.style.animation = `${animationClass} 0.3s ease-in-out`;
+
+        // Remove animation completes
+        setTimeout(() => {
+          if (countElement) {
+            countElement.style.animation = "";
+          }
+        }, 300);
+      }
     } catch (error) {
       console.error("Error toggling like:", error);
     }
@@ -143,44 +163,54 @@ const Post: React.FC<PostProps> = ({
   };
 
   return (
-    <PostContainer isNew={isNew}>
-      <PostHeader>
-        <UserAvatar>
-          {user.avatar ? (
-            <img src={user.avatar} alt={user.name} />
-          ) : (
-            getInitials(user.name)
-          )}
-        </UserAvatar>
-        <UserInfoPost>
-          <UserName>{user.name}</UserName>
-          <PostTime>{timestamp}</PostTime>
-        </UserInfoPost>
-      </PostHeader>
+    <PostContainer isNew={isNew} data-post-id={id}>
+      <PostInfo>
+        <PostHeader>
+          <UserAvatar>
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.name} />
+            ) : (
+              getInitials(user.name)
+            )}
+          </UserAvatar>
+          <UserInfoPost>
+            <UserName>{user.name}</UserName>
+            <PostTime>{timestamp}</PostTime>
+          </UserInfoPost>
+        </PostHeader>
 
-      <PostContent>
-        <PostEmoji>{emoji}</PostEmoji>
-        <PostText dangerouslySetInnerHTML={{ __html: content }} />
-      </PostContent>
-
+        <PostContent>
+          <PostEmoji>{emoji}</PostEmoji>
+          <PostText dangerouslySetInnerHTML={{ __html: content }} />
+        </PostContent>
+      </PostInfo>
       <PostActions>
         <PostActionButton
           onClick={handleLikeClick}
+          aria-label={!isLiked ? "like" : "unlike"}
           style={{
             color: isLiked ? "#e74c3c" : "#666",
             fontWeight: isLiked ? "bold" : "normal",
           }}
         >
-          <span>{isLiked ? "❤️" : "🤍"}</span>
-          <span>{likeCount}</span>
+          {isLiked ? (
+            <FavoriteIcon
+              fontSize="small"
+              style={{
+                animation: "heartBeat 0.6s ease-in-out",
+                transform: "scale(1.2)",
+              }}
+            />
+          ) : (
+            <FavoriteBorderIcon fontSize="small" />
+          )}
+          <span className="count-number">{likeCount}</span>
         </PostActionButton>
-        <PostActionButton onClick={handleCommentClick}>
-          <span>💬</span>
-          <span>{comments}</span>
+        <PostActionButton onClick={handleCommentClick} aria-label={"comment"}>
+          <CommentIcon fontSize="small" />
         </PostActionButton>
-        <PostActionButton onClick={onShare}>
-          <span>📤</span>
-          <span>{shares}</span>
+        <PostActionButton onClick={onShare} aria-label={"share"}>
+          <IosShareIcon fontSize="small" />
         </PostActionButton>
       </PostActions>
 

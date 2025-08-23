@@ -33,6 +33,7 @@ import {
   EditorActions,
   ActionButton,
   SendButton,
+  ActionButtonContained,
 } from "../styles/FeedStyles";
 
 interface RichTextEditorProps {
@@ -428,9 +429,9 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
         </EditorInput>
 
         <EditorActions>
-          <ActionButton title="Add attachment">
+          <ActionButtonContained title="Add attachment">
             <AddIcon fontSize="small" />
-          </ActionButton>
+          </ActionButtonContained>
           <ActionButton title="Voice input">
             <MicIcon fontSize="small" />
           </ActionButton>

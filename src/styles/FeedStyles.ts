@@ -55,9 +55,10 @@ export const EditorToolbar = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  background: #fff;
 `;
+
+export const ToolbarEditButtons = styled.div``;
 
 export const ToolbarButton = styled.button<{ active?: boolean }>`
   padding: 0.5rem;
@@ -286,17 +287,17 @@ export const TextInput = styled.div`
 export const EditorActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.1rem;
   padding: 1rem;
   border-top: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  background: #fff;
 `;
 
-export const ActionButton = styled.button`
+export const ActionButtonContained = styled.button`
   padding: 0.5rem;
-  background: transparent;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: #e5e5e5;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 32px;
@@ -306,9 +307,35 @@ export const ActionButton = styled.button`
   justify-content: center;
   color: #666;
 
+  svg {
+    font-size: 1.5rem;
+  }
+
   &:hover {
     background: #f0f0f0;
-    border-color: #007bff;
+    color: #007bff;
+  }
+`;
+
+export const ActionButton = styled.button`
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+
+  svg {
+    font-size: 1.5rem;
+  }
+  &:hover {
+    background: #f0f0f0;
     color: #007bff;
   }
 `;
@@ -334,10 +361,10 @@ export const SendButton = styled.button`
 
 // Post Styles
 export const Post = styled.div<{ isNew?: boolean }>`
-  background: white;
-  border-radius: 12px;
+  background: rgb(244, 244, 244);
+  border-radius: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 0.5rem;
   margin-bottom: 1rem;
   opacity: ${(props) => (props.isNew ? 0 : 1)};
   transform: ${(props) =>
@@ -366,6 +393,13 @@ export const PostHeader = styled.div`
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
+`;
+
+export const PostInfo = styled.div`
+  background: #fff;
+  border-radius: 24px;
+  border: 1px solid rgb(223, 223, 223);
+  padding: 1rem;
 `;
 
 export const UserAvatar = styled.div`
@@ -500,9 +534,8 @@ export const PostText = styled.div`
 export const PostActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  gap: 0.2rem;
+  padding-top: 0.5rem;
 `;
 
 export const PostActionButton = styled.button`
@@ -521,6 +554,61 @@ export const PostActionButton = styled.button`
   &:hover {
     background: #f0f0f0;
     color: #007bff;
+  }
+
+  .count-number {
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  /* Heart beat animation */
+  @keyframes heartBeat {
+    0% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.3);
+    }
+    28% {
+      transform: scale(1);
+    }
+    42% {
+      transform: scale(1.3);
+    }
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  /* Count number animations */
+  @keyframes countUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-10px);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes countDown {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(10px);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 `;
 
