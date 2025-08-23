@@ -81,14 +81,6 @@ git push origin main
    - Check the Actions tab in your repository
    - Deployment will be available at: `https://aaykmr.github.io/atlys-int`
 
-### Manual Deployment
-
-If you prefer manual deployment:
-
-```bash
-npm run deploy
-```
-
 ## Project Structure
 
 ```
@@ -114,7 +106,6 @@ src/
 - `npm start` - Start development server
 - `npm run build` - Build for production
 - `npm run test` - Run tests
-- `npm run deploy` - Deploy to GitHub Pages
 
 ## Contributing
 
