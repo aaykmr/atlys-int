@@ -30,7 +30,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy:s3": "npm run build && aws s3 sync build/ s3://atlys-int --delete --region ap-south-1",
+    "deploy:s3:dry-run": "npm run build && aws s3 sync build/ s3://atlys-int --delete --dryrun --region ap-south-1"
   },
   "eslintConfig": {
     "extends": [
