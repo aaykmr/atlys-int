@@ -165,9 +165,9 @@ export const initializeDemoPosts = (): void => {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <strong>This is bold text</strong> and <em>this is italic text</em>. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         emoji: "😢",
         timestamp: "5 mins ago",
-        likes: 12,
-        comments: 3,
-        shares: 1,
+        likes: 2,
+        comments: 0,
+        shares: 0,
         likedBy: ["demo@example.com", "test@user.com"],
         commentList: [
           {
@@ -202,8 +202,8 @@ export const initializeDemoPosts = (): void => {
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <u>This is underlined text</u> and <code>this is code</code>. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         emoji: "👍",
         timestamp: "5 mins ago",
-        likes: 8,
-        comments: 2,
+        likes: 1,
+        comments: 0,
         shares: 0,
         likedBy: ["demo@example.com"],
         commentList: [
@@ -222,19 +222,6 @@ export const initializeDemoPosts = (): void => {
             timestamp: "1 min ago",
           },
         ],
-      },
-      {
-        id: "3",
-        user: {
-          name: "Jane Doe",
-        },
-        content:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <ul><li>This is a list item</li><li>Another list item</li></ul> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        emoji: "💀",
-        timestamp: "5 mins ago",
-        likes: 15,
-        comments: 5,
-        shares: 2,
       },
     ];
 

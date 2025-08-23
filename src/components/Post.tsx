@@ -55,6 +55,7 @@ interface PostProps {
   onLike?: () => void;
   onComment?: () => void;
   onShare?: () => void;
+  onCommentAdded?: () => void; // Add callback for when comments are added
 }
 
 const Post: React.FC<PostProps> = ({
@@ -73,6 +74,7 @@ const Post: React.FC<PostProps> = ({
   onLike,
   onComment,
   onShare,
+  onCommentAdded,
 }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentList, setCommentList] = useState<Comment[]>([]);
@@ -155,6 +157,7 @@ const Post: React.FC<PostProps> = ({
       const comment = createComment(id, newComment.trim(), currentUser);
       setCommentList([...commentList, comment]);
       setNewComment("");
+      if (onCommentAdded) onCommentAdded();
     } catch (error) {
       console.error("Error creating comment:", error);
     }

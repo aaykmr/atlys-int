@@ -9,6 +9,7 @@ import RichTextEditor, {
 } from "../components/RichTextEditor";
 import Post from "../components/Post";
 import Navbar from "../components/Navbar";
+import { useLocation } from "react-router-dom";
 import {
   FeedContainer,
   FeedMain,
@@ -20,7 +21,14 @@ const Feed: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [newPostId, setNewPostId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Add refresh trigger
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
+  const location = useLocation(); // Add location hook
+
+  // Function to refresh the feed
+  const refreshFeed = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -29,17 +37,30 @@ const Feed: React.FC = () => {
     // Initialize demo posts
     initializeDemoPosts();
     setPosts(getPosts());
-  }, []);
+  }, [refreshKey]); // Add refreshKey as dependency
+
+  // Listen for navigation changes to refresh feed when returning from auth pages
+  useEffect(() => {
+    if (location.pathname === "/") {
+      const currentUser = getCurrentUser();
+      if (currentUser !== user) {
+        setUser(currentUser);
+        refreshFeed();
+      }
+    }
+  }, [location.pathname, user]);
 
   const handleLogout = () => {
     setCurrentUser(null);
     setUser(null);
     setShowAuthModal(true);
+    refreshFeed(); // Refresh feed on logout
   };
 
   const handleAuthSuccess = () => {
     const currentUser = getCurrentUser();
     setUser(currentUser);
+    refreshFeed(); // Refresh feed on successful login
   };
 
   const handleCloseAuthModal = () => {
@@ -87,6 +108,11 @@ const Feed: React.FC = () => {
     }
   };
 
+  // Handler for post interactions that need refresh
+  const handlePostInteraction = () => {
+    refreshFeed(); // Refresh feed after post interactions
+  };
+
   return (
     <FeedContainer>
       <Navbar
@@ -114,12 +140,21 @@ const Feed: React.FC = () => {
               voiceRecording={post.voiceRecording}
               cameraImage={post.cameraImage}
               onLike={() => {
-                if (!user) setShowAuthModal(true);
+                if (!user) {
+                  setShowAuthModal(true);
+                } else {
+                  handlePostInteraction(); // Refresh after like
+                }
               }}
               onComment={() => {
-                if (!user) setShowAuthModal(true);
+                if (!user) {
+                  setShowAuthModal(true);
+                } else {
+                  handlePostInteraction(); // Refresh after comment
+                }
               }}
               onShare={() => handleShare(post)}
+              onCommentAdded={handlePostInteraction} // Refresh after comment is added
             />
           ))}
         </AuthenticatedContent>
