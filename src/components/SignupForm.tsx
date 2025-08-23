@@ -129,19 +129,16 @@ const SignupForm: React.FC<SignupFormProps> = ({
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
-    // Auto-populate username when email is entered
-    if (name === "identifier" && isEmail(value)) {
-      const generatedUsername = generateUsernameFromEmail(value);
-      setFormData((prev) => ({ ...prev, username: generatedUsername }));
-
-      // Update username validation - username is always valid when auto-generated from email
-      const usernameHasValue = generatedUsername.trim().length > 0;
-      const usernameIsValid = generatedUsername.trim().length >= 3;
-
-      setValidation((prev) => ({
-        ...prev,
-        username: { isValid: usernameIsValid, hasValue: usernameHasValue },
-      }));
+    // Handle username generation based on identifier type
+    if (name === "identifier") {
+      if (isEmail(value)) {
+        // If it's an email, auto-generate username from email
+        const generatedUsername = generateUsernameFromEmail(value);
+        setFormData((prev) => ({ ...prev, username: generatedUsername }));
+      } else {
+        // If it's a username, use it directly as the username
+        setFormData((prev) => ({ ...prev, username: value }));
+      }
     }
 
     // Update validation state
