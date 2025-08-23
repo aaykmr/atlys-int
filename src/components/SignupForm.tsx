@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { SignupFormData } from "../types/auth";
 import { registerUser, isEmail } from "../utils/auth";
-import { useNavigate } from "react-router-dom";
+
 import {
   AuthForm,
   AuthFormContent,
@@ -28,7 +28,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
   onSwitchToLogin,
   onSignupSuccess,
 }) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<SignupFormData>({
     identifier: "",
     password: "",
@@ -136,10 +135,6 @@ const SignupForm: React.FC<SignupFormProps> = ({
 
   const getIdentifierLabel = () => {
     return isEmail(formData.identifier) ? "Email" : "Username";
-  };
-
-  const handleBackToHome = () => {
-    navigate("/");
   };
 
   const handleSwitchToLogin = () => {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { LoginFormData } from "../types/auth";
 import { loginUser } from "../utils/auth";
-import { useNavigate } from "react-router-dom";
+
 import {
   AuthForm,
   AuthFormContent,
@@ -26,7 +26,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onSwitchToSignup,
   onLoginSuccess,
 }) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     identifier: "",
     password: "",
@@ -84,10 +83,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  };
-
-  const handleBackToHome = () => {
-    navigate("/");
   };
 
   const handleSwitchToSignup = () => {

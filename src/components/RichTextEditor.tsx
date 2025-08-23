@@ -52,7 +52,6 @@ export interface RichTextEditorRef {
 
 const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
   ({ onPost }, ref) => {
-    const [content, setContent] = useState("");
     const [selectedEmoji, setSelectedEmoji] = useState("😊");
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
@@ -183,8 +182,6 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
 
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-
         if (headingType === "paragraph") {
           // Convert to paragraph
           document.execCommand("formatBlock", false, "p");
@@ -707,7 +704,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
               </h4>
               <img
                 src={cameraImage}
-                alt="Camera photo"
+                alt=""
                 style={{
                   maxWidth: "200px",
                   borderRadius: "8px",

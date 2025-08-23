@@ -356,7 +356,7 @@ const Post: React.FC<PostProps> = ({
               </h4>
               <img
                 src={cameraImage}
-                alt="Camera photo"
+                alt=""
                 style={{
                   maxWidth: "100%",
                   borderRadius: "8px",

@@ -13,7 +13,6 @@ import {
   FeedContainer,
   FeedMain,
   AuthenticatedContent,
-  UnauthenticatedContent,
 } from "../styles/FeedStyles";
 
 const Feed: React.FC = () => {
@@ -21,7 +20,6 @@ const Feed: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [newPostId, setNewPostId] = useState<string | null>(null);
-  const [pendingNewPost, setPendingNewPost] = useState<PostType | null>(null);
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
   useEffect(() => {
@@ -60,7 +58,6 @@ const Feed: React.FC = () => {
         { content, emoji, attachments, voiceRecording, cameraImage },
         user
       );
-      setPendingNewPost(newPost);
       setNewPostId(newPost.id);
 
       // Add the post to the array immediately
@@ -69,7 +66,6 @@ const Feed: React.FC = () => {
       // Clear the animation state after animation completes
       setTimeout(() => {
         setNewPostId(null);
-        setPendingNewPost(null);
       }, 2500);
     } else {
       setShowAuthModal(true);

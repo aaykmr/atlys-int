@@ -10,7 +10,6 @@ import {
 } from "../styles/NavbarStyles";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import HomeIcon from "@mui/icons-material/Home";
 
 interface NavbarProps {
   user: User | null;
